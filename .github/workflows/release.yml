@@ -1,0 +1,80 @@
+name: Release
+
+# While changesets are pending this keeps a "Version packages" PR open. Once that PR is merged,
+# it publishes the new version to npm, tags v<version> and creates the GitHub release from the
+# changelog. Every step checks what already exists, so running it by hand is safe: it releases
+# whatever version is in package.json if npm or GitHub doesn't have it yet.
+#
+# npm authentication is trusted publishing (OIDC): the package on npmjs.com names this workflow
+# as a trusted publisher, so there is no token to store or rotate.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    name: Version PR or release
+    if: github.repository == 'franco-roura/module-01'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+      pull-requests: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: ./.github/actions/setup
+
+      # A PR opened with the default token doesn't trigger CI. If main requires CI to pass, set
+      # RELEASE_TOKEN (a fine-grained PAT or GitHub App token) and it is used instead.
+      - name: Version PR
+        id: changesets
+        uses: changesets/action@ae32849d5ba541f9ae29e40e22a623bc13562f51 # v2.1.2
+        with:
+          version-script: bun run release:version
+          commit-message: Version packages
+          pr-title: Version packages
+          github-token: ${{ secrets.RELEASE_TOKEN || github.token }}
+
+      - name: Read the version
+        id: version
+        if: steps.changesets.outputs.has-changesets == 'false'
+        run: echo "version=$(jq -r .version packages/module-01/package.json)" >> "$GITHUB_OUTPUT"
+
+      - name: Publish to npm
+        if: steps.changesets.outputs.has-changesets == 'false'
+        working-directory: packages/module-01
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          name=$(jq -r .name package.json)
+          if npm view "$name@$VERSION" version >/dev/null 2>&1; then
+            echo "$name@$VERSION is already on npm"
+            exit 0
+          fi
+          bun run build
+          npm publish --access public
+          echo "Published $name@$VERSION" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Tag and release
+        if: steps.changesets.outputs.has-changesets == 'false'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          tag="v$VERSION"
+          if gh release view "$tag" >/dev/null 2>&1; then
+            echo "$tag is already released"
+            exit 0
+          fi
+          bash .github/scripts/release-notes.sh "$VERSION" > "$RUNNER_TEMP/notes.md"
+          gh release create "$tag" --target "$GITHUB_SHA" --title "$tag" --notes-file "$RUNNER_TEMP/notes.md"
+          echo "Released $tag" >> "$GITHUB_STEP_SUMMARY"

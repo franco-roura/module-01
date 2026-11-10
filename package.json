@@ -1,0 +1,29 @@
+{
+  "name": "module-01-workspace",
+  "private": true,
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "type": "module",
+  "scripts": {
+    "dev": "bun run --cwd apps/docs dev",
+    "build": "bun run --cwd packages/module-01 build && bun run --cwd apps/docs build",
+    "check": "vp check",
+    "format": "vp check --fix",
+    "test": "bun run --cwd packages/module-01 test",
+    "changeset": "changeset",
+    "release:version": "changeset version && bun install --lockfile-only && vp fmt"
+  },
+  "devDependencies": {
+    "@changesets/changelog-github": "1.0.1",
+    "@changesets/cli": "3.0.3",
+    "typescript": "7.0.2",
+    "vite-plus": "1.5.1"
+  },
+  "overrides": {
+    "vite": "npm:@voidzero-dev/vite-plus-core@1.5.1",
+    "vitest": "5.1.0"
+  },
+  "packageManager": "bun@1.4.3"
+}

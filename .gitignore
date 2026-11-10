@@ -1,0 +1,33 @@
+# Local-only notes
+/private/
+CLAUDE.local.md
+
+# Env and secrets
+.env
+.env.*
+!.env.example
+
+# Dependencies
+node_modules/
+
+# Builds
+dist/
+*.tsbuildinfo
+*.tgz
+packages/module-01/src/styles/tokens.generated.css
+apps/docs/src/generated/
+
+# Tests
+coverage/
+
+# Editors / OS
+.idea/
+.vscode/*
+!.vscode/extensions.json
+.DS_Store
+Thumbs.db
+*.log
+
+# Claude Code local settings
+.claude/
+dist-server/

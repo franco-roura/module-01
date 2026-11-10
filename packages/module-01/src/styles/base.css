@@ -1,0 +1,16 @@
+/* Page defaults: canvas background, ink text, Manrope body, signal selection. */
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    -webkit-tap-highlight-color: transparent;
+  }
+  body {
+    @apply bg-background text-foreground font-sans text-body-md antialiased;
+  }
+  ::selection {
+    background: var(--color-signal-tint);
+    color: var(--color-ink);
+  }
+}

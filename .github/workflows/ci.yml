@@ -1,0 +1,63 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  check:
+    name: Check, test and build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: ./.github/actions/setup
+
+      # The token CSS is generated, and the type check reads the built package from the docs app.
+      - name: Build the package
+        run: bun run --cwd packages/module-01 build
+
+      - name: Generate the docs data
+        run: bun run --cwd apps/docs gen
+
+      - name: Format, lint and types
+        run: bun x vp check
+
+      - name: Tests
+        run: bun run test
+
+      - name: Bundle size budgets
+        run: bun run --cwd packages/module-01 size
+
+      - name: Package exports and types
+        run: bun run --cwd packages/module-01 lint:package
+
+      - name: Build the docs
+        run: bun run --cwd apps/docs build
+
+  changeset:
+    name: Changeset
+    # The Version PR and Dependabot PRs carry no changesets. Dependabot is matched by the PR's
+    # author: github.actor is whoever triggered the run, such as a maintainer pressing "Update
+    # branch".
+    if: >-
+      github.event_name == 'pull_request' &&
+      github.head_ref != 'changeset-release/main' &&
+      github.event.pull_request.user.login != 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      - uses: ./.github/actions/setup
+      - name: The change has a changeset
+        run: bun x changeset status --since="origin/$GITHUB_BASE_REF"

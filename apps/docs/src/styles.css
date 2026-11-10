@@ -1,0 +1,54 @@
+@import "tailwindcss";
+@import "@franco_roura/module-01/theme.css";
+
+/* Rendered Markdown: the brand book, component guidelines and the changelog. */
+.prose {
+  color: var(--color-ink);
+  font-size: var(--text-body-md);
+  line-height: var(--text-body-md--line-height);
+}
+.prose > * + * {
+  margin-top: var(--space-4);
+}
+.prose h2 {
+  margin-top: var(--space-12);
+  font-family: var(--font-display);
+  font-size: var(--text-display-md);
+  line-height: var(--text-display-md--line-height);
+}
+.prose h3 {
+  margin-top: var(--space-8);
+  font-family: var(--font-display);
+  font-size: var(--text-display-sm);
+  line-height: var(--text-display-sm--line-height);
+}
+.prose ul {
+  list-style: disc;
+  padding-left: 18px;
+}
+.prose li + li {
+  margin-top: var(--space-2);
+}
+.prose li::marker {
+  color: var(--color-signal-ink);
+}
+.prose a {
+  color: var(--color-signal-ink);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.prose code {
+  border-radius: var(--radius-xs);
+  background: var(--color-shell-recess);
+  padding: 1px 5px;
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+}
+.prose strong {
+  font-weight: 700;
+}
+.prose-compact h2 {
+  margin-top: var(--space-8);
+  font-size: var(--text-display-sm);
+  line-height: var(--text-display-sm--line-height);
+}
