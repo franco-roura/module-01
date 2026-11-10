@@ -1,5 +1,11 @@
 # @franco_roura/module-01
 
+## 1.0.1
+
+### Patch Changes
+
+- [#1](https://github.com/franco-roura/module-01/pull/1) [`2049a17`](https://github.com/franco-roura/module-01/commit/2049a17e97b64d19c3331ae1495810c8daf7893d) Thanks [@dependabot](https://github.com/apps/dependabot)! - Update `lucide-react` to 1.70.0, and build the precompiled `styles.css` with Tailwind CSS 4.3.5.
+
 ## 1.0.0
 
 Initial public release of Module/01 as a package: the React components of a design system of glossy white parts, signal orange trim and HUD markings.
