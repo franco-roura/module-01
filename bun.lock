@@ -37,7 +37,7 @@
     },
     "packages/module-01": {
       "name": "@franco_roura/module-01",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "dependencies": {
         "class-variance-authority": "0.7.1",
         "clsx": "2.1.1",
