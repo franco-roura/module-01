@@ -15,6 +15,8 @@ export type HeroProps = {
   /** An image for the studio frame: a product shot, a screenshot, a portrait. Without it the frame shows a crosshair. */
   image?: React.ReactNode;
   imageLabel?: string;
+  /** The frame's shape: `portrait` (200 × 240) for a person or an object, `wide` (16:10) for a screenshot. */
+  imageShape?: HeroFrameShape;
   /** Replaces the studio frame and grill entirely. */
   media?: React.ReactNode;
   serial?: string;
@@ -22,10 +24,27 @@ export type HeroProps = {
   className?: string;
 };
 
+export type HeroFrameShape = "portrait" | "wide";
+
 /** Studio-backdrop frame for the hero image, with an inner ring and a microprint tag. */
-export function HeroFrame({ image, label }: { image?: React.ReactNode; label?: string }) {
+export function HeroFrame({
+  image,
+  label,
+  shape = "portrait",
+}: {
+  image?: React.ReactNode;
+  label?: string;
+  /** `portrait` is 200 × 240; `wide` is 16:10 and up to 416px wide, for screenshots. */
+  shape?: HeroFrameShape;
+}) {
   return (
-    <div className="relative flex h-60 w-50 items-center justify-center overflow-hidden rounded-md bg-studio [&>img]:size-full [&>img]:object-cover">
+    <div
+      data-shape={shape}
+      className={cn(
+        "relative flex items-center justify-center overflow-hidden rounded-md bg-studio [&>img]:size-full [&>img]:object-cover",
+        shape === "wide" ? "aspect-[16/10] w-full max-w-104 @5xl:w-104" : "h-60 w-50",
+      )}
+    >
       {image ?? <Crosshair className="size-5 text-ink/45" />}
       <span
         aria-hidden
@@ -45,18 +64,25 @@ export function Hero({
   specs,
   image,
   imageLabel,
+  imageShape = "portrait",
   media,
   serial,
   coords,
   className,
 }: HeroProps) {
   return (
-    <section className={cn("relative drop-float", className)}>
+    <section className={cn("@container relative drop-float", className)}>
       <span
         aria-hidden
         className="absolute -top-1.5 left-6 z-10 h-3 w-18 rounded-full bg-signal md:left-16"
       />
-      <div className="relative grid gap-12 rounded-xl bg-shell notch-lg px-6 pt-12 pb-8 md:grid-cols-[1fr_auto] md:px-16 md:pt-16 md:pb-12">
+      <div
+        className={cn(
+          "relative grid gap-12 rounded-xl bg-shell notch-lg px-6 pt-12 pb-8 md:px-16 md:pt-16 md:pb-12",
+          // A wide frame needs the room: it sits under the text until the hero is 1024px wide.
+          imageShape === "wide" ? "@5xl:grid-cols-[minmax(0,1fr)_auto]" : "md:grid-cols-[1fr_auto]",
+        )}
+      >
         {serial && (
           <span className="hud-sm absolute top-6 left-6 text-hud-mark md:left-16">{serial}</span>
         )}
@@ -67,10 +93,15 @@ export function Hero({
           {actions && <div className="flex flex-wrap items-center gap-3">{actions}</div>}
           {specs && <SpecReadout items={specs} />}
         </div>
-        <div className="flex flex-col items-start gap-4 md:items-end">
+        <div
+          className={cn(
+            "flex min-w-0 flex-col items-start gap-4",
+            imageShape === "wide" ? "@5xl:items-end" : "md:items-end",
+          )}
+        >
           {media ?? (
             <>
-              <HeroFrame image={image} label={imageLabel} />
+              <HeroFrame image={image} label={imageLabel} shape={imageShape} />
               <Grill count={4} slotWidth={28} gap="8px" />
             </>
           )}

@@ -68,6 +68,8 @@ Sites (a landing page, a product or docs site, a portfolio) are editorial: few p
 - The hero title is the page or product name in `display-xl`, with one image on `studio`.
 - `signal` carries the timeline nodes and the whole call-to-action block; `signal-ink` sets the hero subtitle.
 - Numbering: timeline `R-01`… (oldest first), cards `C-01`….
+- Inside sections: a before-and-after as a CompareList, a split of one whole as a ShareBar, a sample conversation in Messages, questions and answers in an Accordion (usually just before the CtaBanner).
+- The NavBar uses `mobileMenu` on sites, so every link stays reachable on phones.
 
 ## App surfaces
 

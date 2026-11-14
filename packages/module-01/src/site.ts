@@ -1,4 +1,5 @@
 // Sections for any website: hero, timeline, media cards, call to action, footer.
+export * from "./components/compare-list";
 export * from "./components/cta-banner";
 export * from "./components/footer";
 export * from "./components/hero";
