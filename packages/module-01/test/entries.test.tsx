@@ -2,8 +2,23 @@ import { render, screen } from "@testing-library/react";
 import { describe, expect, test } from "vite-plus/test";
 import { BalanceChart } from "../src/charts";
 import { Amount, CategoryIcon } from "../src/finance";
-import { Button, Field, Input, Panel, SectionHeader } from "../src/index";
-import { Hero, MediaCard, Terminal } from "../src/site";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+  Bubble,
+  Button,
+  Field,
+  Input,
+  Message,
+  MessageContent,
+  NavBar,
+  Panel,
+  SectionHeader,
+  ShareBar,
+} from "../src/index";
+import { CompareList, Hero, MediaCard, Tag, Terminal } from "../src/site";
 
 // One render per entry point: catches a broken import graph or a component that throws.
 describe("entry points render", () => {
@@ -59,5 +74,39 @@ describe("entry points render", () => {
     );
     expect(screen.getByRole("heading", { level: 1, name: "Northwind Atlas" })).toBeTruthy();
     expect(screen.getByText("Live")).toBeTruthy();
+  });
+
+  test("content parts", () => {
+    render(
+      <>
+        <Accordion type="single" defaultValue="a">
+          <AccordionItem value="a">
+            <AccordionTrigger>Does it work offline?</AccordionTrigger>
+            <AccordionContent>Yes.</AccordionContent>
+          </AccordionItem>
+        </Accordion>
+        <Message align="end">
+          <MessageContent>
+            <Bubble>Hello there</Bubble>
+          </MessageContent>
+        </Message>
+        <ShareBar
+          label="Split"
+          parts={[
+            { share: 3, label: "Models" },
+            { share: 1, label: "Us" },
+          ]}
+        />
+        <CompareList items={[{ instead: "By hand", get: "On its own" }]} />
+        <Tag wrap>A short tagline</Tag>
+        <NavBar mobileMenu brand="Northwind" links={[{ label: "Docs", href: "#docs" }]} />
+      </>,
+    );
+    expect(
+      screen.getByRole("button", { name: "Does it work offline?" }).getAttribute("aria-expanded"),
+    ).toBe("true");
+    expect(screen.getByRole("group", { name: "Split" }).textContent).toContain("75%Models");
+    expect(screen.getByText("Instead of:", { exact: false })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Menu" })).toBeTruthy();
   });
 });

@@ -1,5 +1,6 @@
-import { Button, StatusLed } from "@franco_roura/module-01";
+import { Button, Field, Input, StatusLed } from "@franco_roura/module-01";
 import {
+  CompareList,
   CtaBanner,
   Footer,
   Hero,
@@ -33,6 +34,20 @@ export function Opening() {
       ]}
       imageLabel="FIG. 01"
       coords="REV.2026"
+    />
+  );
+}
+
+export function ProductScreenshot() {
+  return (
+    <Hero
+      serial="UNIT-01 · REV.2026"
+      title="Northwind Atlas"
+      subtitle="Field data platform"
+      lead="Every sensor on one map, updated as readings arrive."
+      actions={<Button arrow>Start free trial</Button>}
+      imageShape="wide"
+      imageLabel="FIG. 01 · MAP VIEW"
     />
   );
 }
@@ -110,6 +125,31 @@ export function CallToAction() {
   );
 }
 
+export function Waitlist() {
+  return (
+    <CtaBanner
+      code="S-05 · EARLY ACCESS"
+      title="Join the waitlist"
+      text="The first 1,000 teams get six months free."
+    >
+      <form
+        className="grid items-end gap-4 sm:grid-cols-[1fr_1fr_auto]"
+        onSubmit={(event) => event.preventDefault()}
+      >
+        <Field label="Your name" htmlFor="waitlist-name">
+          <Input id="waitlist-name" autoComplete="name" />
+        </Field>
+        <Field label="Work email" htmlFor="waitlist-email">
+          <Input id="waitlist-email" type="email" autoComplete="email" />
+        </Field>
+        <Button type="submit" variant="secondary" arrow>
+          Save my spot
+        </Button>
+      </form>
+    </CtaBanner>
+  );
+}
+
 export function PageFoot() {
   return (
     <Footer
@@ -161,6 +201,46 @@ export function Tags() {
         Keycap
       </Tag>
     </div>
+  );
+}
+
+export function Tagline() {
+  return (
+    <div className="flex max-w-60 flex-col gap-3 rounded-lg bg-shell p-5">
+      <Tag tone="signal" wrap>
+        Your readings, not a spreadsheet
+      </Tag>
+      <p className="text-body-sm text-ink-soft">
+        A long tag wraps instead of overflowing the card.
+      </p>
+    </div>
+  );
+}
+
+export function BeforeAndAfter() {
+  return (
+    <CompareList
+      className="max-w-md"
+      getLabel="With Northwind"
+      items={[
+        {
+          instead: "Copying readings off each logger by hand",
+          get: "Every station uploads on its own",
+        },
+        { instead: "Five spreadsheets that disagree", get: "One map everyone sees" },
+      ]}
+    />
+  );
+}
+
+export function WithLabels() {
+  return (
+    <CompareList
+      showLabels
+      className="max-w-md"
+      getLabel="With Northwind"
+      items={[{ instead: "Driving out to check a sensor", get: "An alert when it goes quiet" }]}
+    />
   );
 }
 

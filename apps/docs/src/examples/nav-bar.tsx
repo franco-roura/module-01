@@ -4,6 +4,7 @@ export function Site() {
   return (
     <div className="rounded-lg bg-studio p-4">
       <NavBar
+        mobileMenu
         brand="Northwind"
         serial="UNIT-01 · REV.2026"
         links={[
@@ -24,7 +25,7 @@ export function App() {
         brand="Atlas/01"
         links={[
           { label: "Dashboard", href: "#dashboard", active: true },
-          { label: "Transactions", href: "#transactions" },
+          { label: "Activity", href: "#activity", desktopOnly: true },
           { label: "Budgets", href: "#budgets", desktopOnly: true },
         ]}
         end={<StatusLed className="px-3 max-sm:hidden">Synced</StatusLed>}

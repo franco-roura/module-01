@@ -1,5 +1,10 @@
 import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
   Badge,
+  Bubble,
   Button,
   Calendar,
   Checkbox,
@@ -10,6 +15,9 @@ import {
   HudLabel,
   Input,
   Label,
+  Message,
+  MessageAvatar,
+  MessageContent,
   MultiCombobox,
   NavBar,
   Panel,
@@ -18,6 +26,7 @@ import {
   SelectTrigger,
   SelectValue,
   Separator,
+  ShareBar,
   Skeleton,
   StatusLed,
   Tabs,
@@ -36,6 +45,7 @@ import {
   MoneyInput,
 } from "@franco_roura/module-01/finance";
 import {
+  CompareList,
   CtaBanner,
   Footer,
   Hero,
@@ -155,6 +165,46 @@ export const previews: Record<string, () => React.ReactNode> = {
         end={<Button size="sm">Sign up</Button>}
       />
     </Scaled>
+  ),
+  accordion: () => (
+    <Scaled width={320} scale={0.7}>
+      <Accordion type="single" defaultValue="b">
+        <AccordionItem value="a">
+          <AccordionTrigger>Does it work offline?</AccordionTrigger>
+        </AccordionItem>
+        <AccordionItem value="b">
+          <AccordionTrigger>Can I export my data?</AccordionTrigger>
+          <AccordionContent>To CSV and GeoJSON, at any time.</AccordionContent>
+        </AccordionItem>
+      </Accordion>
+    </Scaled>
+  ),
+  message: () => (
+    <Scaled width={320} scale={0.7}>
+      <div className="flex flex-col gap-3">
+        <Message align="end">
+          <MessageContent>
+            <Bubble>Which stations went quiet?</Bubble>
+          </MessageContent>
+        </Message>
+        <Message>
+          <MessageAvatar fallback="AI" />
+          <MessageContent>
+            <Bubble>Two: Harbor North and Ridge 4.</Bubble>
+          </MessageContent>
+        </Message>
+      </div>
+    </Scaled>
+  ),
+  "share-bar": () => (
+    <ShareBar
+      label="Where each subscription goes"
+      className="w-52"
+      parts={[
+        { share: 80, label: "Models" },
+        { share: 20, label: "Us" },
+      ]}
+    />
   ),
   separator: () => (
     <div className="w-40 text-body-sm text-ink">
@@ -476,6 +526,13 @@ export const previews: Record<string, () => React.ReactNode> = {
           { label: "Regions", value: "12" },
           { label: "Setup", value: "5 min" },
         ]}
+      />
+    </Scaled>
+  ),
+  "compare-list": () => (
+    <Scaled width={300} scale={0.7}>
+      <CompareList
+        items={[{ instead: "Copying readings by hand", get: "Every station uploads itself" }]}
       />
     </Scaled>
   ),

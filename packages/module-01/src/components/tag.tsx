@@ -11,6 +11,8 @@ export type TagProps = {
   interactive?: boolean;
   /** The pressed state of an interactive tag. */
   pressed?: boolean;
+  /** Lets a long tag (a short tagline) wrap onto more lines instead of overflowing. */
+  wrap?: boolean;
   className?: string;
   children: React.ReactNode;
 } & Pick<
@@ -24,6 +26,7 @@ export function Tag({
   led,
   interactive,
   pressed,
+  wrap,
   className,
   children,
   ...handlers
@@ -31,6 +34,8 @@ export function Tag({
   const classes = cn(
     badgeVariants({ variant: tone ?? "default" }),
     "gap-1.5 px-3 py-1",
+    // A one-line wrapped tag is still a stadium; two lines become a capsule with room at the ends.
+    wrap && "max-w-full shrink justify-start rounded-lg px-3.5 text-left whitespace-normal",
     interactive &&
       "cursor-pointer outline-none aria-pressed:bg-signal-tint aria-pressed:shadow-press",
     className,

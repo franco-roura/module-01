@@ -1,4 +1,5 @@
 import type { ComponentType } from "react";
+import * as accordion from "./examples/accordion";
 import * as badge from "./examples/badge";
 import * as button from "./examples/button";
 import * as charts from "./examples/charts";
@@ -10,17 +11,20 @@ import * as finance from "./examples/finance";
 import * as hud from "./examples/hud";
 import * as inputs from "./examples/inputs";
 import * as menus from "./examples/menus";
+import * as message from "./examples/message";
 import * as multiCombobox from "./examples/multi-combobox";
 import * as navBar from "./examples/nav-bar";
 import * as overlays from "./examples/overlays";
 import * as panel from "./examples/panel";
 import * as sectionHeader from "./examples/section-header";
 import * as select from "./examples/select";
+import * as shareBar from "./examples/share-bar";
 import * as site from "./examples/site";
 import * as switching from "./examples/switching";
 
 // Example files by name. The same name keys their extracted source in generated/data.json.
 const modules: Record<string, Record<string, ComponentType>> = {
+  accordion,
   badge,
   button,
   charts,
@@ -32,12 +36,14 @@ const modules: Record<string, Record<string, ComponentType>> = {
   hud,
   inputs,
   menus,
+  message,
   "multi-combobox": multiCombobox,
   "nav-bar": navBar,
   overlays,
   panel,
   "section-header": sectionHeader,
   select,
+  "share-bar": shareBar,
   site,
   switching,
 };
@@ -103,6 +109,32 @@ export const docs: Doc[] = [
     guidelines: ["NavBar"],
     components: ["NavBar"],
     examples: ["nav-bar.Site", "nav-bar.App"],
+  },
+  // --- Kit: content
+  {
+    slug: "accordion",
+    name: "Accordion",
+    entry: "core",
+    guidelines: ["Accordion"],
+    components: ["Accordion", "AccordionTrigger", "AccordionContent"],
+    examples: ["accordion.Questions", "accordion.SettingsGroups"],
+    base: radix("Accordion", "accordion"),
+  },
+  {
+    slug: "message",
+    name: "Message",
+    entry: "core",
+    guidelines: ["Message"],
+    components: ["Message", "MessageAvatar", "Bubble"],
+    examples: ["message.Exchange", "message.Conversation", "message.Actions"],
+  },
+  {
+    slug: "share-bar",
+    name: "ShareBar",
+    entry: "core",
+    guidelines: ["ShareBar"],
+    components: ["ShareBar"],
+    examples: ["share-bar.Split", "share-bar.SeveralParts"],
   },
   // --- Kit: actions
   {
@@ -347,7 +379,7 @@ export const docs: Doc[] = [
     entry: "site",
     guidelines: ["Hero"],
     components: ["Hero", "HeroFrame"],
-    examples: ["site.Opening"],
+    examples: ["site.Opening", "site.ProductScreenshot"],
   },
   {
     slug: "timeline-entry",
@@ -371,7 +403,7 @@ export const docs: Doc[] = [
     entry: "site",
     guidelines: ["CtaBanner"],
     components: ["CtaBanner"],
-    examples: ["site.CallToAction"],
+    examples: ["site.CallToAction", "site.Waitlist"],
   },
   {
     slug: "footer",
@@ -390,6 +422,14 @@ export const docs: Doc[] = [
     examples: ["site.Specs"],
   },
   {
+    slug: "compare-list",
+    name: "CompareList",
+    entry: "site",
+    guidelines: ["CompareList"],
+    components: ["CompareList"],
+    examples: ["site.BeforeAndAfter", "site.WithLabels"],
+  },
+  {
     slug: "terminal",
     name: "Terminal",
     entry: "site",
@@ -403,7 +443,7 @@ export const docs: Doc[] = [
     entry: "site",
     guidelines: ["Tag"],
     components: ["Tag"],
-    examples: ["site.Tags"],
+    examples: ["site.Tags", "site.Tagline"],
   },
   {
     slug: "split-flap",
@@ -447,6 +487,12 @@ export const categories: { id: string; title: string; note: string; slugs: strin
     slugs: ["panel", "section-header", "hud-markings", "nav-bar", "separator"],
   },
   {
+    id: "content",
+    title: "Content",
+    note: "Ways to show content: sections that open in place, conversations, shares of a whole.",
+    slugs: ["accordion", "message", "share-bar"],
+  },
+  {
     id: "actions",
     title: "Actions",
     note: "Things you press, and the chips that label them.",
@@ -487,6 +533,7 @@ export const categories: { id: string; title: string; note: string; slugs: strin
       "cta-banner",
       "footer",
       "spec-readout",
+      "compare-list",
       "terminal",
       "tag",
       "split-flap",

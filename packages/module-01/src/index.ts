@@ -1,5 +1,6 @@
 // The generic kit. Finance parts, charts and site sections have their own entry points
 // (`/finance`, `/charts`, `/site`) so their dependencies stay out of apps that never use them.
+export * from "./components/accordion";
 export * from "./components/alert-dialog";
 export * from "./components/badge";
 export * from "./components/button";
@@ -14,12 +15,14 @@ export * from "./components/field";
 export * from "./components/hud";
 export * from "./components/input";
 export * from "./components/label";
+export * from "./components/message";
 export * from "./components/multi-combobox";
 export * from "./components/nav-bar";
 export * from "./components/panel";
 export * from "./components/popover";
 export * from "./components/select";
 export * from "./components/separator";
+export * from "./components/share-bar";
 export * from "./components/sheet";
 export * from "./components/skeleton";
 export * from "./components/sonner";
