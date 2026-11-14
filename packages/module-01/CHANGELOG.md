@@ -1,5 +1,13 @@
 # @franco_roura/module-01
 
+## 1.1.0
+
+### Minor Changes
+
+- [#3](https://github.com/franco-roura/module-01/pull/3) [`3a59e07`](https://github.com/franco-roura/module-01/commit/3a59e0706fd48ad6e6953788619f54274feba6ac) Thanks [@franco-roura](https://github.com/franco-roura)! - Add `Accordion`, `Message` (with `Bubble`) and `ShareBar` to the kit, and `CompareList` to the site entry. `NavBar` takes `mobileMenu`, which folds its links into a sheet on phones, and `Tag` takes `wrap` for short taglines that would otherwise overflow.
+  
+  `CtaBanner` takes `children`, set full width under the text for a signup form, with fields restyled to read on signal. `Hero` takes `imageShape="wide"` (and `HeroFrame` a `shape`) for a 16:10 screenshot frame.
+
 ## 1.0.1
 
 ### Patch Changes
