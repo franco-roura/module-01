@@ -5,7 +5,7 @@ import type * as React from "react";
 
 /**
  * Decimal amount input with the currency code as a suffix. The value is the raw string the user
- * typed; parse it with `parseAmount` from lib/money. On phones the figure is amount-lg: inputs under
+ * typed; parse it with `parseAmount(value, minorUnits, locale)` from lib/money. On phones the figure is amount-lg: inputs under
  * 16px make mobile browsers zoom in on focus.
  */
 export function MoneyInput({
