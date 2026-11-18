@@ -1,5 +1,11 @@
 # @franco_roura/module-01
 
+## 1.2.0
+
+### Minor Changes
+
+- [#6](https://github.com/franco-roura/module-01/pull/6) [`778260e`](https://github.com/franco-roura/module-01/commit/778260ee70375c356b2356470ef1297d84b6751a) Thanks [@franco-roura](https://github.com/franco-roura)! - Parse amounts and rates by locale. `money.parseAmount`, `fx.parseRate` and `money.formatAmountInput` take an optional `locale` (default en-US), and so do `FxCurrencies` and `FxConverter`, so `12,50` reads as 12.50 in es-UY. Group separators must now sit where the locale puts them: `12,50` and `1,2,3` in en-US return null instead of silently becoming 1,250 and 123. Adds `money.numberSeparators`, `money.splitDecimal` and `money.localizeDecimal`.
+
 ## 1.1.0
 
 ### Minor Changes
