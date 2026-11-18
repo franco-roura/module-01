@@ -3,6 +3,8 @@ import { divRoundHalfEven, editFx, fxResult, initialFxState, parseRate } from ".
 
 const USD_UYU = { fromMinorUnits: 2, toMinorUnits: 2 };
 const USD_JPY = { fromMinorUnits: 2, toMinorUnits: 0 };
+const USD_UYU_ES = { ...USD_UYU, locale: "es-UY" };
+const USD_KWD_ES = { fromMinorUnits: 2, toMinorUnits: 3, locale: "es-UY" };
 
 describe("editFx touch order", () => {
   test("typing from then to derives the rate", () => {
@@ -58,6 +60,39 @@ describe("editFx touch order", () => {
   });
 });
 
+describe("editFx in a decimal-comma locale", () => {
+  test("parses comma decimals and writes computed fields the same way", () => {
+    let s = initialFxState();
+    s = editFx(s, "from", "100", USD_UYU_ES);
+    s = editFx(s, "to", "3.905,00", USD_UYU_ES);
+    expect(s.rate).toBe("39,050000");
+    expect(s.ratePrecise).toBe("39,0500000000");
+    s = editFx(s, "rate", "39,10", USD_UYU_ES);
+    expect(s.from).toBe("99,87");
+    expect(fxResult(s, USD_UYU_ES)).toEqual({
+      fromMinor: 9987n,
+      toMinor: 390500n,
+      rate: "39.1000000000",
+    });
+  });
+
+  test("computed three-decimal amounts are not read back as grouping", () => {
+    let s = initialFxState();
+    s = editFx(s, "rate", "0,3075", USD_KWD_ES);
+    s = editFx(s, "from", "4013", USD_KWD_ES);
+    expect(s.to).toBe("1233,998");
+    expect(fxResult(s, USD_KWD_ES)?.toMinor).toBe(1233998n);
+  });
+
+  test("a dot decimal is rejected, not misread", () => {
+    let s = initialFxState();
+    s = editFx(s, "from", "100", USD_UYU_ES);
+    s = editFx(s, "to", "3905.00", USD_UYU_ES);
+    expect(s.rate).toBe("");
+    expect(fxResult(s, USD_UYU_ES)).toBeNull();
+  });
+});
+
 describe("fxResult", () => {
   test("returns minor units and the precise rate", () => {
     let s = initialFxState();
@@ -84,5 +119,13 @@ describe("helpers", () => {
     expect(parseRate("-1")).toBeNull();
     expect(parseRate("x")).toBeNull();
     expect(parseRate("39.05")).toBe(390500000000n);
+  });
+
+  test("parseRate reads the locale and rejects misplaced grouping", () => {
+    expect(parseRate("12,50")).toBeNull();
+    expect(parseRate("1,2,3")).toBeNull();
+    expect(parseRate("1,234.5")).toBe(12345000000000n);
+    expect(parseRate("12,50", "es-UY")).toBe(125000000000n);
+    expect(parseRate("12.50", "es-UY")).toBeNull();
   });
 });

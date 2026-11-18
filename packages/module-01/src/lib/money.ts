@@ -16,16 +16,97 @@ export function minorToDecimal(amount: bigint, minorUnits: number): string {
   return `${neg ? "-" : ""}${whole}.${frac}`;
 }
 
+/** How a locale writes numbers: its decimal and group separators, and how it groups digits. */
+export type NumberSeparators = {
+  decimal: string;
+  group: string;
+  /** Groups of two after the first three, as in en-IN "12,34,567". */
+  lakh: boolean;
+};
+
+const separatorCache = new Map<string, NumberSeparators>();
+
+/** The decimal and group separators a locale uses, read from Intl. Defaults to en-US. */
+export function numberSeparators(locale = "en-US"): NumberSeparators {
+  let s = separatorCache.get(locale);
+  if (!s) {
+    const parts = new Intl.NumberFormat(locale, { numberingSystem: "latn" }).formatToParts(
+      1234567.5,
+    );
+    const integers = parts.filter((p) => p.type === "integer");
+    s = {
+      decimal: parts.find((p) => p.type === "decimal")?.value ?? ".",
+      group: parts.find((p) => p.type === "group")?.value ?? ",",
+      lakh: integers.length > 2 && integers[1]?.value.length === 2,
+    };
+    separatorCache.set(locale, s);
+  }
+  return s;
+}
+
+const escapeRegExp = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+/** Characters people type for a group separator: any space for a space, either apostrophe. */
+function groupClass(group: string): string {
+  if (/\s/.test(group)) return "[\\s\\u00a0\\u202f]";
+  if (group === "'" || group === "’") return "['\\u2019]";
+  return escapeRegExp(group);
+}
+
+const groupingCache = new Map<string, RegExp>();
+
 /**
- * Parses user input like "1,234.5" or "1234.56" into minor units. Returns null for anything
- * that isn't a plain non-negative decimal with at most `minorUnits` decimals.
+ * Splits a non-negative decimal written in a locale into its whole and fraction digits, or
+ * returns null. Group separators must sit where the locale puts them ("1,234" but never "12,50"
+ * or "1,2,3" in en-US), so a decimal written the other way round is rejected, not misread.
  */
-export function parseAmount(input: string, minorUnits: number): bigint | null {
-  const s = input.trim().replace(/,/g, "");
-  if (!/^\d+(\.\d*)?$|^\.\d+$/.test(s)) return null;
-  const [whole = "0", frac = ""] = s.split(".");
+export function splitDecimal(
+  input: string,
+  locale?: string,
+): { whole: string; frac: string } | null {
+  const { decimal, group, lakh } = numberSeparators(locale);
+  const s = input.trim();
+  const parts = s.split(decimal);
+  if (parts.length > 2) return null;
+  const [rawWhole = "", frac = ""] = parts;
+  if (!/^\d*$/.test(frac)) return null;
+
+  let whole = rawWhole;
+  if (!/^\d*$/.test(whole)) {
+    const key = `${locale ?? ""}|${group}|${lakh}`;
+    let grouped = groupingCache.get(key);
+    if (!grouped) {
+      const g = groupClass(group);
+      grouped = lakh
+        ? new RegExp(`^\\d{1,2}(?:${g}\\d{2})*${g}\\d{3}$`)
+        : new RegExp(`^\\d{1,3}(?:${g}\\d{3})+$`);
+      groupingCache.set(key, grouped);
+    }
+    if (!grouped.test(whole)) return null;
+    whole = whole.replace(/\D/g, "");
+  }
+  if (whole === "" && frac === "") return null;
+  return { whole, frac };
+}
+
+/**
+ * Parses an amount the person typed into minor units, reading separators from `locale`
+ * (default en-US): "1,234.5" in en-US, "1.234,5" or "12,50" in es-UY. Returns null for anything
+ * that isn't a non-negative decimal with at most `minorUnits` decimals, including misplaced
+ * group separators.
+ */
+export function parseAmount(input: string, minorUnits: number, locale?: string): bigint | null {
+  const parts = splitDecimal(input, locale);
+  if (!parts) return null;
+  const { whole, frac } = parts;
   if (frac.length > minorUnits) return null;
   return BigInt(whole || "0") * pow10(minorUnits) + BigInt(frac.padEnd(minorUnits, "0") || "0");
+}
+
+/** Writes a plain decimal string ("1234.56") with the locale's decimal separator, no grouping. */
+export function localizeDecimal(decimal: string, locale?: string): string {
+  const sep = numberSeparators(locale).decimal;
+  return sep === "." ? decimal : decimal.replace(".", sep);
 }
 
 const formatters = new Map<number, Intl.NumberFormat>();
@@ -63,7 +144,14 @@ export function formatMoney(
   return `${prefix}${digits}${code ? ` ${currency}` : ""}`;
 }
 
-/** Plain input-friendly value without grouping: 123456n, 2 -> "1234.56". */
-export function formatAmountInput(amount: bigint | null, minorUnits: number): string {
-  return amount === null ? "" : minorToDecimal(amount, minorUnits);
+/**
+ * Plain input-friendly value without grouping, in the locale's decimal separator:
+ * 123456n, 2 -> "1234.56" (en-US) or "1234,56" (es-UY). Round-trips through `parseAmount`.
+ */
+export function formatAmountInput(
+  amount: bigint | null,
+  minorUnits: number,
+  locale?: string,
+): string {
+  return amount === null ? "" : localizeDecimal(minorToDecimal(amount, minorUnits), locale);
 }

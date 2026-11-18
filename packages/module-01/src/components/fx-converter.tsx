@@ -1,6 +1,7 @@
 "use client";
 
 import { editFx, type FxCurrencies, type FxField, type FxState } from "../lib/fx";
+import { formatAmountInput, localizeDecimal } from "../lib/money";
 import { cn } from "../lib/utils";
 import { useId } from "react";
 import { FieldLabel } from "./field";
@@ -11,7 +12,8 @@ type Currency = { code: string; minorUnits: number };
 /**
  * Three linked inputs for a cross-currency transfer: amount sent, amount received and rate.
  * Editing one recomputes the least recently edited of the other two (see lib/fx.ts).
- * Controlled: keep the FxState in the parent (start from `initialFxState()`).
+ * Controlled: keep the FxState in the parent (start from `initialFxState()`). Pass the locale the
+ * person types in (e.g. `navigator.language`) so "12,50" reads as 12.5 where that is the norm.
  */
 export function FxConverter({
   id: rootId,
@@ -19,6 +21,7 @@ export function FxConverter({
   to,
   value,
   onChange,
+  locale,
   invalid,
   className,
 }: {
@@ -28,11 +31,13 @@ export function FxConverter({
   to: Currency;
   value: FxState;
   onChange: (next: FxState) => void;
+  /** Locale the amounts and rate are typed in. Default en-US. */
+  locale?: string;
   invalid?: boolean;
   className?: string;
 }) {
   const id = useId();
-  const c: FxCurrencies = { fromMinorUnits: from.minorUnits, toMinorUnits: to.minorUnits };
+  const c: FxCurrencies = { fromMinorUnits: from.minorUnits, toMinorUnits: to.minorUnits, locale };
   const edit = (field: FxField) => (e: React.ChangeEvent<HTMLInputElement>) =>
     onChange(editFx(value, field, e.target.value, c));
   // The field that will be recomputed next is the oldest one; mark it so users can see it.
@@ -51,6 +56,7 @@ export function FxConverter({
           <MoneyInput
             id={`${id}-from`}
             currency={from.code}
+            placeholder={formatAmountInput(0n, from.minorUnits, locale)}
             value={value.from}
             onChange={edit("from")}
             aria-invalid={invalid || undefined}
@@ -65,6 +71,7 @@ export function FxConverter({
           <MoneyInput
             id={`${id}-to`}
             currency={to.code}
+            placeholder={formatAmountInput(0n, to.minorUnits, locale)}
             value={value.to}
             onChange={edit("to")}
             aria-invalid={invalid || undefined}
@@ -79,7 +86,7 @@ export function FxConverter({
           <MoneyInput
             id={`${id}-rate`}
             currency="×"
-            placeholder="0.000000"
+            placeholder={localizeDecimal("0.000000", locale)}
             value={value.rate}
             onChange={edit("rate")}
             aria-invalid={invalid || undefined}
