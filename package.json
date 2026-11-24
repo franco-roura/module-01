@@ -19,7 +19,7 @@
     "@changesets/changelog-github": "1.0.1",
     "@changesets/cli": "3.0.3",
     "typescript": "7.0.2",
-    "vite-plus": "1.6.0"
+    "vite-plus": "1.7.0"
   },
   "overrides": {
     "vite": "npm:@voidzero-dev/vite-plus-core@1.6.0",
